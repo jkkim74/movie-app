@@ -16,38 +16,27 @@ class App extends Component {
   }
   // ...this.state.movies,것을 붙여야 추가가 됨.. 붙이지 않는 경우, 대체가 됨...
   componentDidMount(){
-    setTimeout(()=>{
-        this.setState({
-               movies:[
-               {
-                   title:"Matrix",
-                   poster:"https://ksassets.timeincuk.net/wp/uploads/sites/55/2017/03/matrix_reboot_1000-630x400-1.jpg"
-               },
-               {
-                     title:"Full Metal Jacket",
-                     poster:"https://images-na.ssl-images-amazon.com/images/I/811uASZbNXL._SY445_.jpg"
-               },
-               {
-                     title:"Old Boy",
-                     poster:"https://upload.wikimedia.org/wikipedia/en/thumb/6/67/Oldboykoreanposter.jpg/220px-Oldboykoreanposter.jpg"
-               },
-               {
-                   title:"Star Wars",
-                   poster:"https://imagesvc.timeincapp.com/v3/fan/image?url=https://dorksideoftheforce.com/files/2018/06/how-star-wars-the-last-jedi-sets-up-episode-ix-1065996-1280x0.jpg&"
-               }
-               ,
-               {
-                    title:'transporting',
-                    poster:'https://static1.squarespace.com/static/51b3dc8ee4b051b96ceb10de/t/58c04b0ce4fcb5d05747ab35/1488997145991/new-trailer-for-the-true-story-adventure-of-the-lost-city-of-z1'
-                }
-            ]
-        })
-    },5000)
-
+    this._getMovies();
+  }
+   _getMovies = async () => {
+    const movies = await this._callApi()
+    console.log(movies)
+    this.setState({
+        movies
+    })
+  }
+  _callApi = () => {
+     return fetch('http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=430156241533f1d058c603178cc3ca0e&targetDt=20180910') // kobis site이용의 경우
+    //return fetch('https://yts.ag/api/v2/list_movies.json?sort_by=rating')  // yts site 사용의 경우
+      .then(potato => potato.json())
+      .then(json => json.boxOfficeResult.dailyBoxOfficeList) // kobis site이용의 경우
+      //.then(json => json.data.movies)  // yts site 사용의 경우
+      .catch(err => console.log(err))
   }
   _renderMovies = () =>{
-      const movies = this.state.movies.map((movie,index) => {
-             return <Movie title={movie.title} poster={movie.poster} key={index} />
+      const movies = this.state.movies.map(movie => {
+             //return <Movie title={movie.title} poster={movie.large_cover_image} key={index} />  // yts site 사용의 경우
+             return <Movie title={movie.movieNm} poster={movie.poster} key={movie.id} /> // kobis site이용의 경우
           })
       return movies
   }
