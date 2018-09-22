@@ -26,24 +26,30 @@ class App extends Component {
     })
   }
   _callApi = () => {
-     return fetch('http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=430156241533f1d058c603178cc3ca0e&targetDt=20180910') // kobis site이용의 경우
-    //return fetch('https://yts.ag/api/v2/list_movies.json?sort_by=rating')  // yts site 사용의 경우
-      .then(potato => potato.json())
-      .then(json => json.boxOfficeResult.dailyBoxOfficeList) // kobis site이용의 경우
-      //.then(json => json.data.movies)  // yts site 사용의 경우
-      .catch(err => console.log(err))
+     //return fetch('http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=430156241533f1d058c603178cc3ca0e&targetDt=20180910') // kobis site이용의 경우
+    return fetch('https://yts.ag/api/v2/list_movies.json?sort_by=download_count')
+           .then(potato => potato.json())
+           //.then(json => json.boxOfficeResult.dailyBoxOfficeList)
+           .then(json => json.data.movies)
+           .then(json => json)
+           .catch(err => console.log(err))
   }
   _renderMovies = () =>{
       const movies = this.state.movies.map(movie => {
-             //return <Movie title={movie.title} poster={movie.large_cover_image} key={index} />  // yts site 사용의 경우
-             return <Movie title={movie.movieNm} poster={movie.poster} key={movie.id} /> // kobis site이용의 경우
+            console.log(movie)
+             return <Movie title={movie.title_english}
+             poster={movie.medium_cover_image}
+             genres={movie.genres}
+             synopsis={movie.synopsis}
+             key={movie.id} />  // yts site 사용의 경우
+            // return <Movie title={movie.movieNm} poster={movie.poster} key={movie.id} /> // kobis site이용의 경우
           })
       return movies
   }
   render() {
    //console.log('render act');
     return (
-      <div className="App">
+      <div className={this.state.movies ? "App":"App-loading"}>
         {this.state.movies ? this._renderMovies() : "Loading"}
       </div>
     );
